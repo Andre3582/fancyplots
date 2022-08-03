@@ -63,6 +63,7 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
                 s=markersize, 
                 color=palette[color_idx], 
                 linewidth=markeredgewidth,
+                edgecolor=markeredgecolor,
                 zorder=markerzorder, 
                 **kwargs
                 )
@@ -78,7 +79,7 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
                     color=connectorcolor, 
                     linewidth=connectorwidth, 
                     linestyle=connectorstyle, 
-                    zorder=connectorzorder
+                    zorder=connectorzorder,
                     **kwargs)
 
    
