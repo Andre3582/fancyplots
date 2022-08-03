@@ -10,7 +10,15 @@ from matplotlib import pyplot as plt
 
 rng = np.random.default_rng()
 
-def connected_scatterplot(data, x, y, connect_by, hue=None, order=None, hue_order=None, markersize=None, markercolor=None, palette=None, markeredgecolor=None, markeredgewidth=None, connectorwidth=1, connectorcolor=(0,0,0,0.4), connectorstyle=':', jitter=0.1, offset=0.2, ax=None, markerzorder=10, connectorzorder=0, **kwargs):
+def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=None, markersize=None, markercolor=None, palette=None, markeredgecolor=None, markeredgewidth=None, connectorwidth=1, connectorcolor=(0,0,0,0.4), connectorstyle=':', jitter=0.1, offset=0.2, ax=None, markerzorder=10, connectorzorder=0, **kwargs):
+    
+    """This function creates a stripplot with corresponding dots (values of the same categoty) connected by a line.
+    
+    The 'data', 'x', 'y', and 'hue' variables are equvalent to those of sns.stripplot.
+    
+    The 'connect_by' variable expects the column name by which the 'x' or 'hue' variables should be connected.
+    
+    """
     
     # create a fig an axes if none is provided
     if ax is None:
