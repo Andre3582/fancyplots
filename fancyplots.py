@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 
 rng = np.random.default_rng()
 
-def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=None, markersize=None, markercolor=None, palette=None, markeredgecolor=None, markeredgewidth=None, connectorwidth=1, connectorcolor=(0,0,0,0.4), connectorstyle=':', jitter=0.1, offset=0.2, ax=None, markerzorder=10, connectorzorder=0, **kwargs):
+def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=None, marker='o', markersize=None, markercolor=None, markeralpha=1, palette=None, markeredgecolor=None, markeredgewidth=None, connectorwidth=1, connectorcolor=(0,0,0,0.4), connectorstyle=':', jitter=0.1, offset=0.2, ax=None, markerzorder=10, connectorzorder=0, **kwargs):
     
     """This function creates a stripplot with corresponding dots (values of the same categoty) connected by a line.
     
@@ -61,7 +61,9 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
                 xcoords[x_value], 
                 ycoords[x_value], 
                 s=markersize, 
+                marker=marker,
                 color=palette[color_idx], 
+                alpha=markeralpha,
                 linewidth=markeredgewidth,
                 edgecolor=markeredgecolor,
                 zorder=markerzorder, 
@@ -84,15 +86,24 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
 
    
     else: # if hue is given -> split the scatterd markers into two
-        
+    
+        # if two markers are given (check if it is a list or np array), one for each hue map them to a dict.
+        if isinstance(marker, (list, np.ndarray)):
+            marker_dict = dict()
+            for i, hue_value in enumerate(hue_order):
+                 marker_dict[hue_value] = marker[i]
+            
+    
         # plot the markers
         for x_value in (order):
             color_idx= 0
             for hue_value in (hue_order):
                 ax.scatter(
                     xcoords[x_value][hue_value], ycoords[x_value][hue_value], 
-                    s=markersize, 
-                    color=palette[color_idx], 
+                    s=markersize,  
+                    marker=marker_dict[hue_value],
+                    color=palette[color_idx],
+                    alpha=markeralpha,
                     edgecolor=markeredgecolor, 
                     linewidth=markeredgewidth,
                     label=hue_value, 
