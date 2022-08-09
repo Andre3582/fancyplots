@@ -6,17 +6,20 @@ Created on Wed Aug  3 13:56:39 2022
 """
 
 import numpy as np
+import seaborn as sns 
 from matplotlib import pyplot as plt
 
 rng = np.random.default_rng()
 
-def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=None, marker='o', markersize=None, markercolor=None, markeralpha=1, palette=None, markeredgecolor=None, markeredgewidth=None, connectorwidth=1, connectorcolor=(0,0,0,0.4), connectorstyle=':', jitter=0.1, offset=0.2, ax=None, markerzorder=10, connectorzorder=0, **kwargs):
+def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=None, marker='o', markersize=None, markercolor=None, markeralpha=1, palette=sns.color_palette(), markeredgecolor=None, markeredgewidth=None, connectorwidth=2, connectorcolor=(0,0,0,0.7), connectorstyle='-', jitter=0.1, offset=0.2, ax=None, markerzorder=10, connectorzorder=0, **kwargs):
     
     """This function creates a stripplot with corresponding dots (values of the same categoty) connected by a line.
     
     The 'data', 'x', 'y', and 'hue' variables are equvalent to those of sns.stripplot.
     
     The 'connect_by' variable expects the column name by which the 'x' or 'hue' variables should be connected.
+    
+    It is highly recommended to explicitly pass the 'order' and 'hue_order' arguments to ensure correct plotting.
     
     """
     
@@ -26,7 +29,7 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
       
     
     # extract relevant data
-    order = order if order is not None else data[x].unique()
+    order = order if (order is not None) else data[x].unique()
     ycoords = dict()
     xcoords = dict()
 
@@ -38,7 +41,7 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
             
     else:      
         
-        hue_order = hue_order if hue_order is not None else data[hue].unique()    
+        hue_order = hue_order if (hue_order is not None) else data[hue].unique() 
         
         for x_offset, x_value in enumerate(order):
             ycoords[x_value] = dict()
@@ -62,7 +65,7 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
                 ycoords[x_value], 
                 s=markersize, 
                 marker=marker,
-                color=palette[color_idx], 
+                color=markercolor if markercolor is not None else palette[color_idx], 
                 alpha=markeralpha,
                 linewidth=markeredgewidth,
                 edgecolor=markeredgecolor,
@@ -88,10 +91,13 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
     else: # if hue is given -> split the scatterd markers into two
     
         # if two markers are given (check if it is a list or np array), one for each hue map them to a dict.
-        if isinstance(marker, (list, np.ndarray)):
-            marker_dict = dict()
+        marker_dict = dict()
+        if isinstance(marker, (list, np.ndarray)):            
             for i, hue_value in enumerate(hue_order):
                  marker_dict[hue_value] = marker[i]
+        else:
+            for i, hue_value in enumerate(hue_order):
+                 marker_dict[hue_value] = marker
             
     
         # plot the markers
@@ -102,7 +108,7 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
                     xcoords[x_value][hue_value], ycoords[x_value][hue_value], 
                     s=markersize,  
                     marker=marker_dict[hue_value],
-                    color=palette[color_idx],
+                    color=markercolor if markercolor is not None else palette[color_idx],
                     alpha=markeralpha,
                     edgecolor=markeredgecolor, 
                     linewidth=markeredgewidth,
