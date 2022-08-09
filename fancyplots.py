@@ -9,9 +9,9 @@ import numpy as np
 import seaborn as sns 
 from matplotlib import pyplot as plt
 
-rng = np.random.default_rng()
 
-def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=None, marker='o', markersize=None, markercolor=None, markeralpha=1, palette=sns.color_palette(), markeredgecolor=None, markeredgewidth=None, connectorwidth=2, connectorcolor=(0,0,0,0.7), connectorstyle='-', jitter=0.1, offset=0.2, ax=None, markerzorder=10, connectorzorder=0, **kwargs):
+
+def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=None, marker='o', markersize=None, markercolor=None, markeralpha=1, palette=sns.color_palette(), markeredgecolor=None, markeredgewidth=None, connectorwidth=2, connectorcolor=(0,0,0,0.7), connectorstyle='-', jitter=0.1, jitterseed=None, offset=0.265, ax=None, markerzorder=10, connectorzorder=0, **kwargs):
     
     """This function creates a stripplot with corresponding dots (values of the same categoty) connected by a line.
     
@@ -22,6 +22,8 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
     It is highly recommended to explicitly pass the 'order' and 'hue_order' arguments to ensure correct plotting.
     
     """
+    # set the rng seed
+    rng = np.random.default_rng(jitterseed)
     
     # create a fig an axes if none is provided
     if ax is None:
@@ -42,12 +44,13 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
     else:      
         
         hue_order = hue_order if (hue_order is not None) else data[hue].unique() 
+        n_hues = len(hue_order)
         
         for x_offset, x_value in enumerate(order):
             ycoords[x_value] = dict()
             xcoords[x_value] = dict()
             
-            for hue_offset, hue_value in zip([-offset, offset], hue_order):
+            for hue_offset, hue_value in zip(np.linspace(-offset, offset, n_hues), hue_order):
                 ycoords[x_value][hue_value] = data[(data[x] == x_value) & (data[hue] == hue_value)].sort_values(by=connect_by)[y]
                 xcoords[x_value][hue_value] = rng.uniform(-jitter/2, jitter/2, ycoords[x_value][hue_value].size) + hue_offset + x_offset # i determines main x-coordinate, hue_offset shifts it slightly to the left or right
     
@@ -75,9 +78,16 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
             color_idx+=1
         
         # plot the connectors
-        x_val1, x_val2 = order
-        x_pairs = zip(xcoords[x_val1], xcoords[x_val2])
-        y_pairs = zip(ycoords[x_val1], ycoords[x_val2])
+        
+        # x_val1, x_val2 = order
+        # x_pairs = zip(xcoords[x_val1], xcoords[x_val2])
+        # y_pairs = zip(ycoords[x_val1], ycoords[x_val2])
+        
+        x_pairs = []
+        y_pairs = []
+        for x_val, next_x_val in zip(order, order[1:]):
+            x_pairs += list( zip(xcoords[x_val], xcoords[next_x_val]) )
+            y_pairs += list( zip(ycoords[x_val], ycoords[next_x_val]) )
         
         for x_pair, y_pair in zip(x_pairs, y_pairs):
             ax.plot(x_pair, y_pair, 
@@ -120,10 +130,17 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
                 color_idx+=1
         
         # plot the connectors
-        for x_value in (order):
-            h1, h2 = hue_order
-            x_pairs = zip(xcoords[x_value][h1], xcoords[x_value][h2])
-            y_pairs = zip(ycoords[x_value][h1], ycoords[x_value][h2])
+        for x_val in (order):
+            # h1, h2 = hue_order            
+            # x_pairs = zip(xcoords[x_val][h1], xcoords[x_val][h2])
+            # y_pairs = zip(ycoords[x_val][h1], ycoords[x_val][h2])
+            
+            
+            x_pairs = []
+            y_pairs = []
+            for hue_val, next_hue_val in zip(hue_order, hue_order[1:]):
+                x_pairs += list( zip(xcoords[x_val][hue_val], xcoords[x_val][next_hue_val]) )
+                y_pairs += list( zip(ycoords[x_val][hue_val], ycoords[x_val][next_hue_val]) )
             
             for x_pair, y_pair in zip(x_pairs, y_pairs):
                 ax.plot(x_pair, y_pair, 
@@ -145,6 +162,6 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
     # add legend if hue is given
     if hue is not None:
         handles, labels = ax.get_legend_handles_labels()
-        ax.legend(handles[:2], labels[:2], title=hue)
+        ax.legend(handles[:n_hues], labels[:n_hues], title=hue)
     
     return ax
