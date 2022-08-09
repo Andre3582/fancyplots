@@ -19,7 +19,7 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
     
     The 'connect_by' variable expects the column name by which the 'x' or 'hue' variables should be connected.
     
-    It is highly recommended to explicitly pass the 'order' and 'hue_order' arguments to ensure correct plotting.
+    It is highly recommended to explicitly pass the 'order' (and 'hue_order') arguments to ensure correct plotting.
     
     """
     # set the rng seed
@@ -78,11 +78,7 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
             color_idx+=1
         
         # plot the connectors
-        
-        # x_val1, x_val2 = order
-        # x_pairs = zip(xcoords[x_val1], xcoords[x_val2])
-        # y_pairs = zip(ycoords[x_val1], ycoords[x_val2])
-        
+
         x_pairs = []
         y_pairs = []
         for x_val, next_x_val in zip(order, order[1:]):
@@ -130,11 +126,7 @@ def connected_stripplot(data, x, y, connect_by, hue=None, order=None, hue_order=
                 color_idx+=1
         
         # plot the connectors
-        for x_val in (order):
-            # h1, h2 = hue_order            
-            # x_pairs = zip(xcoords[x_val][h1], xcoords[x_val][h2])
-            # y_pairs = zip(ycoords[x_val][h1], ycoords[x_val][h2])
-            
+        for x_val in (order):           
             
             x_pairs = []
             y_pairs = []
