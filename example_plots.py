@@ -29,6 +29,7 @@ fp.connected_stripplot(
     connect_by='id',
     ax=ax
 )
+plt.show()
 
 #%%  Plain connected stripplot with three categories split across three other categories
 
@@ -43,6 +44,8 @@ fp.connected_stripplot(
     connectorzorder=10,
     ax=ax,    
 )
+plt.show()
+
 
 #%% Combined with a violin plot
 
@@ -67,6 +70,7 @@ fp.connected_stripplot(
     markercolor='k',
     ax=ax,    
 )
+plt.show()
 
 
 #%% Combined with a violin plot with hues
@@ -93,3 +97,5 @@ fp.connected_stripplot(
     markercolor='k',
     ax=ax,    
 )
+
+plt.show()
